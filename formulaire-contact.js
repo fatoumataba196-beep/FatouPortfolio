@@ -39,67 +39,84 @@ const form = document.getElementById("contact-form");
 
 const statusEl = document.getElementById("form-status");
 
+function setStatus(msg) {
+  if (!statusEl) return;
+  statusEl.textContent = msg;
+}
+
 
 // ==========================
 // ENVOI DU FORMULAIRE
 // ==========================
 
 if (form) {
+  const submitBtn = form.querySelector("button[type=submit]");
 
-  form.addEventListener("submit", async (e) => {
+  const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
-    e.preventDefault();
+  async function addDocWithRetry(data, { retries = 3, baseDelayMs = 1000 } = {}) {
+    let lastErr;
 
-    const nom = document.getElementById("nom").value.trim();
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        return await addDoc(collection(db, "messages"), data);
+      } catch (err) {
+        lastErr = err;
+        console.error(`Firebase addDoc échoué (tentative ${attempt}/${retries}) :`, err);
 
-    const email = document.getElementById("email").value.trim();
-
-    const message = document.getElementById("message").value.trim();
-
-    // Reset affichage erreur
-    statusEl.textContent = "";
-
-
-    // ==========================
-    // VALIDATION
-    // ==========================
-
-    if (!nom || !email || !message) {
-
-      statusEl.textContent = "Veuillez remplir tous les champs.";
-
-      return;
-
+        if (attempt < retries) {
+          // backoff exponentiel: 1s, 2s, 4s...
+          const delay = baseDelayMs * 2 ** (attempt - 1);
+          await sleep(delay);
+        }
+      }
     }
 
+    throw lastErr;
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // Empêche double-submit pendant l’envoi
+    if (submitBtn && submitBtn.disabled) return;
+
+    const nom = document.getElementById("nom").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const message = document.getElementById("message").value.trim();
+
+    statusEl.textContent = "";
+
+    if (!nom || !email || !message) {
+      setStatus("Veuillez remplir tous les champs.");
+      return;
+    }
 
     try {
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = "0.7";
+        submitBtn.style.cursor = "not-allowed";
+      }
 
       statusEl.textContent = "Envoi en cours...";
 
-
       // ==========================
-      // ENREGISTREMENT FIREBASE
+      // ENREGISTREMENT FIREBASE (avec retry)
       // ==========================
-
-      const docRef = await addDoc(collection(db, "messages"), {
-
-        nom,
-
-        email,
-
-        message,
-
-        createdAt: serverTimestamp()
-
-      });
-
-
+      await addDocWithRetry(
+        {
+          nom,
+          email,
+          message,
+          createdAt: serverTimestamp(),
+        },
+        { retries: 3, baseDelayMs: 1000 }
+      );
 
       // ==========================
       // ENVOI EMAILJS (ne doit pas bloquer Firebase)
       // ==========================
-
       if (typeof emailjs !== "undefined") {
         try {
           await emailjs.send(
@@ -113,27 +130,16 @@ if (form) {
           );
         } catch (emailErr) {
           console.error("EmailJS error (bloquante ignorée):", emailErr);
-          // On n'échoue pas si EmailJS ne marche pas
         }
       }
 
-
-      // ==========================
-      // SUCCÈS
-      // ==========================
-
       statusEl.textContent = "Message envoyé avec succès ✅";
-
       form.reset();
-
     } catch (error) {
-
       console.error("Erreur :", error);
 
-      // Afficher un message plus utile (Firebase / EmailJS)
-      // Afficher plus de détails : message/code + payload complet si nécessaire
       const errMsg = error?.message || error?.code || String(error);
-      // Afficher l'objet complet lisiblement côté UI
+
       let uiDetail = "";
       try {
         uiDetail = JSON.stringify(error, Object.getOwnPropertyNames(error));
@@ -141,14 +147,18 @@ if (form) {
         uiDetail = String(error);
       }
 
-      statusEl.textContent = `Erreur lors de l'envoi ❌ (${errMsg})`;
-      console.error("Erreur complète:", uiDetail);
+      statusEl.textContent = `Échec après relance de l'envoi ❌ (${errMsg})`;
       statusEl.title = uiDetail;
-
+      console.error("Erreur complète:", uiDetail);
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = "";
+        submitBtn.style.cursor = "";
+      }
     }
-
-
   });
 }
+
 
 
