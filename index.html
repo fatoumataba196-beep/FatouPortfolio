@@ -17,7 +17,8 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./style.css">
+
 </head>
 <body>
     <!-- HEADER -->
@@ -62,15 +63,14 @@
                         Me contacter
                     </a>
 
-                    <a class="btn btn-primary" href="CV Fatoumata Ba.pdf" download="CV Fatoumata Ba.pdf">
-                        CV (PDF)
+                    <a href="./CV Fatoumata Ba.pdf" class="btn btn-secondary" download>
+                        Télécharger mon CV
                     </a>
                 </div>
-
             </div>
 
             <div class="hero-image">
-                <img src="PP.jpeg" alt="Photo professionnelle de Fatoumata Ba">
+<img src="./PP.jpeg" alt="Photo professionnelle de Fatoumata Ba">
             </div>
 
         </section>
@@ -110,7 +110,7 @@
         <section id="about" class="about hidden section">
 
             <div class="about-image">
-                <img src="mon pp portfolio.png" alt="Photo de Fatoumata Ba">
+<img src="./mon pp portfolio.png" alt="Photo de Fatoumata Ba">
             </div>
 
             <div class="about-content">
@@ -135,28 +135,9 @@
                     <div class="timeline-item">SEO & référencement digital</div>
                 </div>
 
-                <div class="values">
-                    <span>Créativité</span>
-                    <span>Professionnalisme</span>
-                    <span>Authenticité</span>
-                    <span>Impact</span>
-                    <span>Adaptabilité</span>
-                </div>
 
-                <div class="about-contact">
-                    <div class="about-contact-item">
-                        <p>Me contacter :</p>
-                        <a class="btn btn-secondary" href="mailto:Fatoumataba196@gmail.com">Fatoumataba196@gmail.com</a>
-                    </div>
-
-                    <div class="about-contact-item">
-                        <p>Télécharger mon CV :</p>
-                        <a class="btn btn-primary" href="CV Fatoumata Ba.pdf" download="CV Fatoumata Ba.pdf">CV (PDF)</a>
-                    </div>
-                </div>
 
             </div>
-
 
         </section>
 
@@ -289,17 +270,17 @@
 
         <!-- PROJET 1 -->
         <article class="project-card">
-            <img src="projet 1.jpg" alt="Portfolio personnel">
+<img src="./projet 1.jpg" alt="Portfolio personnel">
 
             <div class="project-content">
-                <h3>Bannière Twitter</h3>
-                <p>Création d'une bannière professionnelle.</p>     
+                <h3>Carte de visite</h3>
+                <p>Création carte de visite d'un client.</p>     
             </div>
         </article>
 
         <!-- PROJET 2 -->
         <article class="project-card">
-            <img src="PROJET 2 (2).png" alt="Pixelora Studio">
+<img src="./PROJET 2 (2).png" alt="Pixelora Studio">
 
             <div class="project-content">
                 <h3>Pixelora Studio</h3>
@@ -311,7 +292,7 @@
 
         <!-- PROJET 3 -->
         <article class="project-card">
-            <img src="projet 3.png" alt="Projet affiche">
+<img src="./projet 3.png" alt="Projet affiche">
 
             <div class="project-content">
                 <h3>Projet Vidéo Digital</h3>
@@ -324,64 +305,47 @@
 
 </section>
         <!-- CONTACT -->
-       <!----<section id="contact" class="contact section hidden">
+<section id="contact" class="contact section">
 
             <div class="section-title">
                 <h2>Contact</h2>
                 <p>Discutons de votre projet digital.</p>
             </div>
 
-            <form class="contact-form">
+            <form id="contact-form">
 
-                <input type="text" placeholder="Votre nom" required>
+                <label for="nom">Nom :</label>
+                <input type="text" id="nom" name="nom" placeholder="Votre nom" required>
 
-                <input type="email" placeholder="Votre email" required>
+                <label for="email">Email :</label>
+                <input type="email" id="email" name="email" placeholder="Votre email" required>
 
-                <input type="text" placeholder="Sujet" required>
-
-                <textarea placeholder="Votre message" required></textarea>
+                <label for="message">Message :</label>
+                <textarea id="message" name="message" rows="5" placeholder="Votre message" required></textarea>
 
                 <button type="submit">
+
+
                     Envoyer le message
                 </button>
 
             </form>
 
+        
+            <p class="contact-email-inline">
+                <a class="contact-email-link" href="mailto:fatoumataba196@gmail.com">fatoumataba196@gmail.com</a>
+            </p>
         </section>
-    -->
-
-    <form id="contact-form">
-    <label for="nom">Nom :</label>
-    <input type="text" id="nom" name="nom" required>
- 
-    <label for="email">Email :</label>
-    <input type="email" id="email" name="email" required>
- 
-    <label for="message">Message :</label>
-    <textarea id="message" name="message" rows="5" required>
-    </textarea>
- 
-    <button type="submit">Envoyer</button>
- 
-    <p id="form-status"></p>
-</form>
-
-<div class="contact-links">
-    <p>Ou envoyez-moi un email :</p>
-    <a class="btn btn-secondary" href="mailto:Fatoumataba196@gmail.com">Fatoumataba196@gmail.com</a>
-</div>
-
-
-
 
     </main>
+
 
     <!-- FOOTER -->
     <footer>
 
         <div class="footer-logo">FB</div>
 
-        <p>bout
+        <p>
             © <span id="year"></span> Fatoumata Ba — Tous droits réservés.
         </p>
 
@@ -390,10 +354,6 @@
     </footer>
 
     <script src="script.js"></script>
-    <script type="module" src="formulaire-contact.js"></script>
-
-
-
 </body>
 </html>
 
